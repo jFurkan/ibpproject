@@ -1,64 +1,50 @@
 <?php
 session_start();
 include "../includes/db.php";
-include "../includes/functions.php";
-
-if(!isset($_GET['id'])){
-    header("Location: ../index.php");
-    exit();
-}
 
 $id = (int)$_GET['id'];
 
-// Dataset bilgisi
-$sql = "SELECT d.*, u.username, c.cat_name FROM datasets d
-        JOIN users u ON d.user_id = u.user_id
-        JOIN categories c ON d.cat_id = c.cat_id
-        WHERE d.dataset_id = $id";
-$result = mysqli_query($conn, $sql);
-
+$result = mysqli_query($conn, "SELECT * FROM datasets WHERE dataset_id = $id");
 if(mysqli_num_rows($result) == 0){
     echo "Dataset bulunamadi!";
     exit();
 }
-
 $dataset = mysqli_fetch_assoc($result);
 
-// Puan gonderme
+// Kullanici ve kategori bilgisi
+$u = mysqli_fetch_assoc(mysqli_query($conn, "SELECT username FROM users WHERE user_id = {$dataset['user_id']}"));
+$k = mysqli_fetch_assoc(mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = {$dataset['cat_id']}"));
+
+// Puan ve indirme
+$p = mysqli_fetch_assoc(mysqli_query($conn, "SELECT AVG(rating) as ort FROM ratings WHERE dataset_id = $id"));
+$puan = $p['ort'] ? round($p['ort'], 1) . "/5" : "Henuz puanlanmadi";
+
+$d = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = $id"));
+
+// Tagler
+$tagler = mysqli_query($conn, "SELECT t.tag_name FROM tags t JOIN dataset_tags dt ON t.tag_id = dt.tag_id WHERE dt.dataset_id = $id");
+
+// Yorumlar
+$yorumlar = mysqli_query($conn, "SELECT c.comment_text, c.comment_date, u.username FROM comments c JOIN users u ON c.user_id = u.user_id WHERE c.dataset_id = $id ORDER BY c.comment_date DESC");
+
 $hata = "";
 $basari = "";
 
+// Puan gonder
 if(isset($_POST['puan_gonder']) && isset($_SESSION['user_id'])){
-    $puan = (int)$_POST['rating'];
+    $puan_deger = (int)$_POST['rating'];
     $user_id = $_SESSION['user_id'];
-
-    if($puan < 1 || $puan > 5){
-        $hata = "1 ile 5 arasi puan girin!";
-    } else {
-        mysqli_query($conn, "DELETE FROM ratings WHERE dataset_id = $id AND user_id = $user_id");
-        mysqli_query($conn, "INSERT INTO ratings (dataset_id, user_id, rating) VALUES ($id, $user_id, $puan)");
-        $basari = "Puaniniz kaydedildi!";
-    }
+    mysqli_query($conn, "DELETE FROM ratings WHERE dataset_id = $id AND user_id = $user_id");
+    mysqli_query($conn, "INSERT INTO ratings (dataset_id, user_id, rating) VALUES ($id, $user_id, $puan_deger)");
+    $basari = "Puaniniz kaydedildi!";
 }
-
-// Tagler
-$tag_result = mysqli_query($conn, "SELECT t.tag_name FROM tags t JOIN dataset_tags dt ON t.tag_id = dt.tag_id WHERE dt.dataset_id = $id");
-
-// Yorumlar
-$yorum_result = mysqli_query($conn, "SELECT c.*, u.username FROM comments c JOIN users u ON c.user_id = u.user_id WHERE c.dataset_id = $id ORDER BY c.comment_date DESC");
-
-$puan = ortalamaPuan($conn, $id);
-$indirme = indirmeSayisi($conn, $id);
-$tarih = date("d.m.Y H:i", strtotime($dataset['upload_date']));
-$boyut = dosyaBoyutuFormatla($dataset['filesize']);
 ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
     <meta charset="UTF-8">
     <title><?php echo $dataset['title']; ?></title>
     <link rel="stylesheet" href="../css/style.css">
-    <script src="../js/validation.js"></script>
     <script src="../js/ajax.js"></script>
 </head>
 <body>
@@ -66,7 +52,7 @@ $boyut = dosyaBoyutuFormatla($dataset['filesize']);
 <div class="navbar">
     <a href="../index.php">Ana Sayfa</a>
     <?php if(isset($_SESSION['user_id'])): ?>
-        <a href="upload.php">Dataset Yukle</a>
+        <a href="upload.php">Yukle</a>
         <a href="profile.php">Profilim</a>
         <a href="../logout.php">Cikis Yap</a>
     <?php else: ?>
@@ -81,17 +67,15 @@ $boyut = dosyaBoyutuFormatla($dataset['filesize']);
     <?php if($hata != "") echo "<p class='hata'>$hata</p>"; ?>
     <?php if($basari != "") echo "<p class='basari'>$basari</p>"; ?>
 
-    <p><strong>Kategori:</strong> <?php echo $dataset['cat_name']; ?></p>
-    <p><strong>Yukleyen:</strong> <?php echo $dataset['username']; ?></p>
-    <p><strong>Tarih:</strong> <?php echo $tarih; ?></p>
-    <p><strong>Boyut:</strong> <?php echo $boyut; ?></p>
-    <p><strong>Ortalama Puan:</strong> <?php echo $puan; ?></p>
-    <p><strong>Indirilme Sayisi:</strong> <?php echo $indirme; ?></p>
-
-    <p><strong>Aciklama:</strong><br><?php echo $dataset['description']; ?></p>
+    <p><strong>Kategori:</strong> <?php echo $k['cat_name']; ?></p>
+    <p><strong>Yukleyen:</strong> <?php echo $u['username']; ?></p>
+    <p><strong>Tarih:</strong> <?php echo $dataset['upload_date']; ?></p>
+    <p><strong>Puan:</strong> <?php echo $puan; ?></p>
+    <p><strong>Indirme:</strong> <?php echo $d['sayi']; ?></p>
+    <p><strong>Aciklama:</strong> <?php echo $dataset['description']; ?></p>
 
     <p><strong>Tagler:</strong>
-    <?php while($tag = mysqli_fetch_assoc($tag_result)): ?>
+    <?php while($tag = mysqli_fetch_assoc($tagler)): ?>
         <span class="tag"><?php echo $tag['tag_name']; ?></span>
     <?php endwhile; ?>
     </p>
@@ -99,23 +83,20 @@ $boyut = dosyaBoyutuFormatla($dataset['filesize']);
     <br>
 
     <?php if(isset($_SESSION['user_id'])): ?>
-        <a href="../download.php?id=<?php echo $id; ?>">
-            <input type="button" value="Indir">
-        </a>
+        <a href="../download.php?id=<?php echo $id; ?>"><input type="button" value="Indir"></a>
     <?php else: ?>
         <p><a href="../login.php">Indirmek icin giris yapin</a></p>
     <?php endif; ?>
 
     <?php if(isset($_SESSION['user_id']) && $_SESSION['user_id'] == $dataset['user_id']): ?>
-        &nbsp;&nbsp;
-        <a href="../delete.php?id=<?php echo $id; ?>" onclick="return confirm('Silmek istediginize emin misiniz?')">
-            <button class="silme-btn">Dataseti Sil</button>
+        &nbsp;
+        <a href="../delete.php?id=<?php echo $id; ?>" onclick="return confirm('Emin misiniz?')">
+            <button class="silme-btn">Sil</button>
         </a>
     <?php endif; ?>
 
     <hr style="margin:20px 0;">
 
-    <!-- Puan verme -->
     <?php if(isset($_SESSION['user_id'])): ?>
     <h3>Puan Ver</h3>
     <form method="POST">
@@ -128,40 +109,34 @@ $boyut = dosyaBoyutuFormatla($dataset['filesize']);
         </select>
         <input type="submit" name="puan_gonder" value="Puan Ver" style="width:auto;">
     </form>
-    <br>
     <?php endif; ?>
 
     <hr style="margin:20px 0;">
 
-    <!-- Yorumlar -->
     <h3>Yorumlar</h3>
     <br>
-
     <div id="yorumlar">
-        <?php
-        if(mysqli_num_rows($yorum_result) == 0){
-            echo "<p>Henuz yorum yok.</p>";
-        } else {
-            while($yorum = mysqli_fetch_assoc($yorum_result)){
-                $ytarih = date("d.m.Y H:i", strtotime($yorum['comment_date']));
-                echo "<div class='yorum-kutu'>";
-                echo "<strong>{$yorum['username']}</strong> - $ytarih";
-                echo "<p>{$yorum['comment_text']}</p>";
-                echo "</div>";
-            }
-        }
-        ?>
+        <?php if(mysqli_num_rows($yorumlar) == 0): ?>
+            <p>Henuz yorum yok.</p>
+        <?php else: ?>
+            <?php while($yorum = mysqli_fetch_assoc($yorumlar)): ?>
+                <div class="yorum-kutu">
+                    <strong><?php echo $yorum['username']; ?></strong> - <?php echo $yorum['comment_date']; ?>
+                    <p><?php echo $yorum['comment_text']; ?></p>
+                </div>
+            <?php endwhile; ?>
+        <?php endif; ?>
     </div>
 
     <br>
 
     <?php if(isset($_SESSION['user_id'])): ?>
-    <h3>Yorum Yap</h3>
-    <textarea id="comment_text" rows="3" style="width:100%;"></textarea>
-    <br><br>
-    <button onclick="yorumGonder(<?php echo $id; ?>)">Yorum Gonder</button>
+        <h3>Yorum Yap</h3>
+        <textarea id="comment_text" rows="3" style="width:100%;"></textarea>
+        <br><br>
+        <button onclick="yorumGonder(<?php echo $id; ?>)">Gonder</button>
     <?php else: ?>
-        <p><a href="../login.php">Yorum yapmak icin giris yapin</a></p>
+        <p><a href="../login.php">Yorum icin giris yapin</a></p>
     <?php endif; ?>
 
 </div>

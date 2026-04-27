@@ -1,29 +1,31 @@
 <?php
 session_start();
 include "../includes/db.php";
-include "../includes/auth.php";
-include "../includes/functions.php";
 
-girisZorunlu();
+// Giris kontrolu
+if(!isset($_SESSION['user_id'])){
+    header("Location: ../login.php");
+    exit();
+}
 
-// En cok indirilen datasetler - GROUP BY sorgusu
-$en_cok = mysqli_query($conn, "SELECT d.title, d.dataset_id, COUNT(dl.download_id) as toplam
+// Toplam sayilar
+$toplam_user    = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM users"))['sayi'];
+$toplam_dataset = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM datasets"))['sayi'];
+$toplam_indirme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads"))['sayi'];
+
+// En cok indirilen datasetler (GROUP BY kullanimi)
+$en_cok = mysqli_query($conn, "SELECT d.dataset_id, d.title, COUNT(dl.download_id) as toplam
     FROM datasets d
     LEFT JOIN downloads dl ON d.dataset_id = dl.dataset_id
     GROUP BY d.dataset_id, d.title
     ORDER BY toplam DESC
     LIMIT 5");
 
-// Son yuklenen datasetler
-$son_yuklenen = mysqli_query($conn, "SELECT d.*, u.username FROM datasets d JOIN users u ON d.user_id = u.user_id ORDER BY d.upload_date DESC LIMIT 5");
-
-// Toplam istatistikler
-$toplam_user = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM users"))['sayi'];
-$toplam_dataset = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM datasets"))['sayi'];
-$toplam_indirme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads"))['sayi'];
+// Son yuklenen 5 dataset
+$son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC LIMIT 5");
 ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
@@ -33,15 +35,16 @@ $toplam_indirme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as say
 
 <div class="navbar">
     <a href="../index.php">Ana Sayfa</a>
-    <a href="upload.php">Dataset Yukle</a>
+    <a href="upload.php">Yukle</a>
     <a href="profile.php">Profilim</a>
     <a href="dashboard.php">Dashboard</a>
     <a href="../logout.php">Cikis Yap</a>
 </div>
 
 <div class="container">
-    <h2>Genel Istatistikler</h2>
+    <h2>Dashboard</h2>
     <br>
+
     <p>Toplam Kullanici: <strong><?php echo $toplam_user; ?></strong></p>
     <p>Toplam Dataset: <strong><?php echo $toplam_dataset; ?></strong></p>
     <p>Toplam Indirme: <strong><?php echo $toplam_indirme; ?></strong></p>
@@ -52,8 +55,8 @@ $toplam_indirme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as say
     <br>
     <table>
         <tr>
-            <th>Dataset Basligi</th>
-            <th>Indirme Sayisi</th>
+            <th>Baslik</th>
+            <th>Indirme</th>
         </tr>
         <?php while($row = mysqli_fetch_assoc($en_cok)): ?>
         <tr>
@@ -70,14 +73,12 @@ $toplam_indirme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as say
     <table>
         <tr>
             <th>Baslik</th>
-            <th>Yukleyen</th>
             <th>Tarih</th>
         </tr>
         <?php while($row = mysqli_fetch_assoc($son_yuklenen)): ?>
         <tr>
             <td><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>" class="duz-link"><?php echo $row['title']; ?></a></td>
-            <td><?php echo $row['username']; ?></td>
-            <td><?php echo date("d.m.Y", strtotime($row['upload_date'])); ?></td>
+            <td><?php echo $row['upload_date']; ?></td>
         </tr>
         <?php endwhile; ?>
     </table>

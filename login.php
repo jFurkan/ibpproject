@@ -1,27 +1,23 @@
 <?php
 session_start();
 include "includes/db.php";
-include "includes/functions.php";
 
 $hata = "";
 
 if(isset($_POST['giris'])){
-    $email = temizle($_POST['email']);
+
+    $email    = trim($_POST['email']);
     $password = $_POST['password'];
 
-    // PHP dogrulama
-    if(empty($email) || empty($password)){
+    if($email == "" || $password == ""){
         $hata = "Tum alanlari doldurun!";
-    } elseif(strpos($email, '@') === false){
-        $hata = "Gecerli bir email girin!";
     } else {
-        $hashli_sifre = sha1($password);
-        $sql = "SELECT * FROM users WHERE email = '$email' AND password = '$hashli_sifre'";
-        $result = mysqli_query($conn, $sql);
+        $sifre = sha1($password);
+        $sorgu = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email' AND password = '$sifre'");
 
-        if(mysqli_num_rows($result) == 1){
-            $kullanici = mysqli_fetch_assoc($result);
-            $_SESSION['user_id'] = $kullanici['user_id'];
+        if(mysqli_num_rows($sorgu) == 1){
+            $kullanici = mysqli_fetch_assoc($sorgu);
+            $_SESSION['user_id']  = $kullanici['user_id'];
             $_SESSION['username'] = $kullanici['username'];
             header("Location: index.php");
             exit();
@@ -32,7 +28,7 @@ if(isset($_POST['giris'])){
 }
 ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Giris Yap</title>

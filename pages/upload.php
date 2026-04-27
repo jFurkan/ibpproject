@@ -1,81 +1,71 @@
 <?php
 session_start();
 include "../includes/db.php";
-include "../includes/auth.php";
-include "../includes/functions.php";
 
-girisZorunlu();
+// Giris kontrolu
+if(!isset($_SESSION['user_id'])){
+    header("Location: ../login.php");
+    exit();
+}
 
 $hata = "";
 $basari = "";
 
-// Kategorileri getir
-$kat_result = mysqli_query($conn, "SELECT * FROM categories");
+$kategoriler = mysqli_query($conn, "SELECT * FROM categories");
 
 if(isset($_POST['yukle'])){
-    $title = temizle($_POST['title']);
-    $description = temizle($_POST['description']);
-    $cat_id = temizle($_POST['cat_id']);
-    $tags = temizle($_POST['tags']);
 
-    // PHP dogrulama
-    if(empty($title)){
+    $title       = trim($_POST['title']);
+    $description = trim($_POST['description']);
+    $cat_id      = $_POST['cat_id'];
+    $tags        = trim($_POST['tags']);
+
+    if($title == ""){
         $hata = "Baslik bos olamaz!";
-    } elseif(empty($cat_id)){
+    } elseif($cat_id == ""){
         $hata = "Kategori secin!";
-    } elseif(!isset($_FILES['file']) || $_FILES['file']['error'] != 0){
-        $hata = "Lutfen bir dosya secin!";
+    } elseif($_FILES['file']['error'] != 0){
+        $hata = "Dosya secin!";
     } else {
-        $dosya_adi = $_FILES['file']['name'];
-        $dosya_boyutu = $_FILES['file']['size'];
-        $gecici = $_FILES['file']['tmp_name'];
 
-        // Dosyayi kaydet
-        $yeni_isim = time() . "_" . $dosya_adi;
-        $hedef = "../uploads/" . $yeni_isim;
+        $dosya_adi  = $_FILES['file']['name'];
+        $dosya_boyut = $_FILES['file']['size'];
+        $yeni_isim  = time() . "_" . $dosya_adi;
 
         if(!is_dir("../uploads/")){
             mkdir("../uploads/");
         }
 
-        if(move_uploaded_file($gecici, $hedef)){
-            $user_id = $_SESSION['user_id'];
-            $sql = "INSERT INTO datasets (user_id, cat_id, title, description, filename, filesize)
-                    VALUES ('$user_id', '$cat_id', '$title', '$description', '$yeni_isim', '$dosya_boyutu')";
+        move_uploaded_file($_FILES['file']['tmp_name'], "../uploads/" . $yeni_isim);
 
-            if(mysqli_query($conn, $sql)){
-                $dataset_id = mysqli_insert_id($conn);
+        $user_id = $_SESSION['user_id'];
+        mysqli_query($conn, "INSERT INTO datasets (user_id, cat_id, title, description, filename, filesize) VALUES ('$user_id', '$cat_id', '$title', '$description', '$yeni_isim', '$dosya_boyut')");
+        $dataset_id = mysqli_insert_id($conn);
 
-                // Tagleri ekle
-                if($tags != ""){
-                    $tag_listesi = explode(",", $tags);
-                    foreach($tag_listesi as $tag){
-                        $tag = trim(temizle($tag));
-                        if($tag == "") continue;
+        // Tagleri ekle
+        if($tags != ""){
+            $tag_listesi = explode(",", $tags);
+            foreach($tag_listesi as $tag){
+                $tag = trim($tag);
+                if($tag == "") continue;
 
-                        $tag_kontrol = mysqli_query($conn, "SELECT tag_id FROM tags WHERE tag_name = '$tag'");
-                        if(mysqli_num_rows($tag_kontrol) > 0){
-                            $tag_id = mysqli_fetch_assoc($tag_kontrol)['tag_id'];
-                        } else {
-                            mysqli_query($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')");
-                            $tag_id = mysqli_insert_id($conn);
-                        }
-                        mysqli_query($conn, "INSERT INTO dataset_tags (dataset_id, tag_id) VALUES ('$dataset_id', '$tag_id')");
-                    }
+                $tag_kontrol = mysqli_query($conn, "SELECT tag_id FROM tags WHERE tag_name = '$tag'");
+                if(mysqli_num_rows($tag_kontrol) > 0){
+                    $tag_id = mysqli_fetch_assoc($tag_kontrol)['tag_id'];
+                } else {
+                    mysqli_query($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')");
+                    $tag_id = mysqli_insert_id($conn);
                 }
-
-                $basari = "Dataset yuklendi! <a href='dataset.php?id=$dataset_id'>Goruntule</a>";
-            } else {
-                $hata = "Veritabani hatasi!";
+                mysqli_query($conn, "INSERT INTO dataset_tags (dataset_id, tag_id) VALUES ('$dataset_id', '$tag_id')");
             }
-        } else {
-            $hata = "Dosya yuklenemedi!";
         }
+
+        $basari = "Dataset yuklendi! <a href='dataset.php?id=$dataset_id'>Goruntule</a>";
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Dataset Yukle</title>
@@ -86,7 +76,7 @@ if(isset($_POST['yukle'])){
 
 <div class="navbar">
     <a href="../index.php">Ana Sayfa</a>
-    <a href="upload.php">Dataset Yukle</a>
+    <a href="upload.php">Yukle</a>
     <a href="profile.php">Profilim</a>
     <a href="../logout.php">Cikis Yap</a>
 </div>
@@ -98,6 +88,7 @@ if(isset($_POST['yukle'])){
     <?php if($basari != "") echo "<p class='basari'>$basari</p>"; ?>
 
     <form method="POST" enctype="multipart/form-data" onsubmit="return uploadDogrula()">
+
         <label>Baslik:</label>
         <input type="text" id="title" name="title">
 
@@ -107,15 +98,15 @@ if(isset($_POST['yukle'])){
         <label>Kategori:</label>
         <select name="cat_id">
             <option value="">Secin...</option>
-            <?php while($kat = mysqli_fetch_assoc($kat_result)): ?>
-                <option value="<?php echo $kat['cat_id']; ?>"><?php echo $kat['cat_name']; ?></option>
+            <?php while($k = mysqli_fetch_assoc($kategoriler)): ?>
+                <option value="<?php echo $k['cat_id']; ?>"><?php echo $k['cat_name']; ?></option>
             <?php endwhile; ?>
         </select>
 
         <label>Tagler (virgul ile ayirin):</label>
-        <input type="text" name="tags" placeholder="ornek: csv, makine ogrenimi, saglik">
+        <input type="text" name="tags" placeholder="csv, saglik, makine ogrenimi">
 
-        <label>Dosya Sec:</label>
+        <label>Dosya:</label>
         <input type="file" id="file" name="file">
 
         <br><br>

@@ -1,46 +1,37 @@
 <?php
 session_start();
 include "includes/db.php";
-include "includes/functions.php";
 
 $hata = "";
 $basari = "";
 
 if(isset($_POST['kayit'])){
-    $username = temizle($_POST['username']);
-    $email = temizle($_POST['email']);
+
+    $username = trim($_POST['username']);
+    $email    = trim($_POST['email']);
     $password = $_POST['password'];
     $password2 = $_POST['password2'];
 
-    // PHP dogrulama
-    if(empty($username) || empty($email) || empty($password)){
+    if($username == "" || $email == "" || $password == ""){
         $hata = "Tum alanlari doldurun!";
-    } elseif(strlen($username) < 3){
-        $hata = "Kullanici adi en az 3 karakter olmali!";
-    } elseif(strpos($email, '@') === false){
-        $hata = "Gecerli bir email girin!";
     } elseif(strlen($password) < 6){
         $hata = "Sifre en az 6 karakter olmali!";
     } elseif($password != $password2){
-        $hata = "Sifreler eslesmyor!";
+        $hata = "Sifreler eslesmedi!";
     } else {
         $kontrol = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
         if(mysqli_num_rows($kontrol) > 0){
             $hata = "Bu email zaten kayitli!";
         } else {
-            $hashli_sifre = sha1($password);
-            $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$hashli_sifre')";
-            if(mysqli_query($conn, $sql)){
-                $basari = "Kayit basarili! <a href='login.php'>Giris yap</a>";
-            } else {
-                $hata = "Bir hata olustu, tekrar deneyin.";
-            }
+            $sifre = sha1($password);
+            mysqli_query($conn, "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$sifre')");
+            $basari = "Kayit basarili! <a href='login.php'>Giris yap</a>";
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Kayit Ol</title>
