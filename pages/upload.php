@@ -53,11 +53,9 @@ if(isset($_POST['yukle'])){
                         $tag = trim(temizle($tag));
                         if($tag == "") continue;
 
-                        // Tag var mi kontrol et
                         $tag_kontrol = mysqli_query($conn, "SELECT tag_id FROM tags WHERE tag_name = '$tag'");
                         if(mysqli_num_rows($tag_kontrol) > 0){
-                            $tag_row = mysqli_fetch_assoc($tag_kontrol);
-                            $tag_id = $tag_row['tag_id'];
+                            $tag_id = mysqli_fetch_assoc($tag_kontrol)['tag_id'];
                         } else {
                             mysqli_query($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')");
                             $tag_id = mysqli_insert_id($conn);

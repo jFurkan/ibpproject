@@ -35,12 +35,8 @@ if(isset($_POST['puan_gonder']) && isset($_SESSION['user_id'])){
     if($puan < 1 || $puan > 5){
         $hata = "1 ile 5 arasi puan girin!";
     } else {
-        $puan_kontrol = mysqli_query($conn, "SELECT * FROM ratings WHERE dataset_id = $id AND user_id = $user_id");
-        if(mysqli_num_rows($puan_kontrol) > 0){
-            mysqli_query($conn, "UPDATE ratings SET rating = $puan WHERE dataset_id = $id AND user_id = $user_id");
-        } else {
-            mysqli_query($conn, "INSERT INTO ratings (dataset_id, user_id, rating) VALUES ($id, $user_id, $puan)");
-        }
+        mysqli_query($conn, "DELETE FROM ratings WHERE dataset_id = $id AND user_id = $user_id");
+        mysqli_query($conn, "INSERT INTO ratings (dataset_id, user_id, rating) VALUES ($id, $user_id, $puan)");
         $basari = "Puaniniz kaydedildi!";
     }
 }

@@ -6,13 +6,8 @@ function temizle($veri){
 }
 
 function dosyaBoyutuFormatla($bytes){
-    if($bytes < 1024){
-        return $bytes . " B";
-    } elseif($bytes < 1048576){
-        return round($bytes/1024, 1) . " KB";
-    } else {
-        return round($bytes/1048576, 1) . " MB";
-    }
+    if($bytes >= 1048576) return round($bytes/1048576, 1) . " MB";
+    return round($bytes/1024, 1) . " KB";
 }
 
 function ortalamaPuan($conn, $dataset_id){
