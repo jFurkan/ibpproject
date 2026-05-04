@@ -2,6 +2,11 @@
 session_start();
 include "../includes/db.php";
 
+if(!isset($_GET['id'])){
+    header("Location: ../index.php");
+    exit();
+}
+
 $id = (int)$_GET['id'];
 
 $result = mysqli_query($conn, "SELECT * FROM datasets WHERE dataset_id = $id");
