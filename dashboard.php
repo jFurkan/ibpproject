@@ -1,19 +1,16 @@
 <?php
 session_start();
-include "../includes/db.php";
+include "db.php";
 
-// Giris kontrolu
 if(!isset($_SESSION['user_id'])){
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit();
 }
 
-// Toplam sayilar
 $toplam_user    = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM users"))['sayi'];
 $toplam_dataset = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM datasets"))['sayi'];
 $toplam_indirme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads"))['sayi'];
 
-// En cok indirilen datasetler (GROUP BY kullanimi)
 $en_cok = mysqli_query($conn, "SELECT d.dataset_id, d.title, COUNT(dl.download_id) as toplam
     FROM datasets d
     LEFT JOIN downloads dl ON d.dataset_id = dl.dataset_id
@@ -21,7 +18,6 @@ $en_cok = mysqli_query($conn, "SELECT d.dataset_id, d.title, COUNT(dl.download_i
     ORDER BY toplam DESC
     LIMIT 5");
 
-// Son yuklenen 5 dataset
 $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC LIMIT 5");
 ?>
 <!DOCTYPE html>
@@ -29,16 +25,16 @@ $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="navbar">
-    <a href="../index.php">Ana Sayfa</a>
+    <a href="index.php">Ana Sayfa</a>
     <a href="upload.php">Yukle</a>
     <a href="profile.php">Profilim</a>
     <a href="dashboard.php">Dashboard</a>
-    <a href="../logout.php">Cikis Yap</a>
+    <a href="logout.php">Cikis Yap</a>
 </div>
 
 <div class="container">
@@ -54,10 +50,7 @@ $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date
     <h3>En Cok Indirilen Datasetler</h3>
     <br>
     <table>
-        <tr>
-            <th>Baslik</th>
-            <th>Indirme</th>
-        </tr>
+        <tr><th>Baslik</th><th>Indirme</th></tr>
         <?php while($row = mysqli_fetch_assoc($en_cok)): ?>
         <tr>
             <td><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>" class="duz-link"><?php echo $row['title']; ?></a></td>
@@ -71,10 +64,7 @@ $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date
     <h3>Son Yuklenen Datasetler</h3>
     <br>
     <table>
-        <tr>
-            <th>Baslik</th>
-            <th>Tarih</th>
-        </tr>
+        <tr><th>Baslik</th><th>Tarih</th></tr>
         <?php while($row = mysqli_fetch_assoc($son_yuklenen)): ?>
         <tr>
             <td><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>" class="duz-link"><?php echo $row['title']; ?></a></td>

@@ -1,17 +1,14 @@
 <?php
 session_start();
-include "../includes/db.php";
+include "db.php";
 
-// Giris kontrolu
 if(!isset($_SESSION['user_id'])){
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
-
+$user_id  = $_SESSION['user_id'];
 $kullanici = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE user_id = $user_id"));
-
 $datasetlerim = mysqli_query($conn, "SELECT * FROM datasets WHERE user_id = $user_id ORDER BY upload_date DESC");
 ?>
 <!DOCTYPE html>
@@ -19,15 +16,15 @@ $datasetlerim = mysqli_query($conn, "SELECT * FROM datasets WHERE user_id = $use
 <head>
     <meta charset="UTF-8">
     <title>Profilim</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="navbar">
-    <a href="../index.php">Ana Sayfa</a>
+    <a href="index.php">Ana Sayfa</a>
     <a href="upload.php">Yukle</a>
     <a href="profile.php">Profilim</a>
-    <a href="../logout.php">Cikis Yap</a>
+    <a href="logout.php">Cikis Yap</a>
 </div>
 
 <div class="container">
@@ -60,7 +57,7 @@ $datasetlerim = mysqli_query($conn, "SELECT * FROM datasets WHERE user_id = $use
                     <td><a href="dataset.php?id=<?php echo $ds['dataset_id']; ?>" class="duz-link"><?php echo $ds['title']; ?></a></td>
                     <td><?php echo $ds['upload_date']; ?></td>
                     <td><?php echo $ind['sayi']; ?></td>
-                    <td><a href="../delete.php?id=<?php echo $ds['dataset_id']; ?>" class="silme-btn" onclick="return confirm('Emin misiniz?')">Sil</a></td>
+                    <td><a href="delete.php?id=<?php echo $ds['dataset_id']; ?>" class="silme-btn" onclick="return confirm('Emin misiniz?')">Sil</a></td>
                 </tr>
             <?php endwhile; ?>
         </table>

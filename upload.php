@@ -1,10 +1,9 @@
 <?php
 session_start();
-include "../includes/db.php";
+include "db.php";
 
-// Giris kontrolu
 if(!isset($_SESSION['user_id'])){
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit();
 }
 
@@ -28,30 +27,25 @@ if(isset($_POST['yukle'])){
         $hata = "Dosya secin!";
     } else {
 
-        $dosya_adi  = $_FILES['file']['name'];
+        $dosya_adi   = $_FILES['file']['name'];
         $dosya_boyut = $_FILES['file']['size'];
-        $yeni_isim  = time() . "_" . $dosya_adi;
+        $yeni_isim   = time() . "_" . $dosya_adi;
 
-        if(!is_dir("../uploads/")){
-            mkdir("../uploads/");
-        }
+        if(!is_dir("uploads/")) mkdir("uploads/");
 
-        move_uploaded_file($_FILES['file']['tmp_name'], "../uploads/" . $yeni_isim);
+        move_uploaded_file($_FILES['file']['tmp_name'], "uploads/" . $yeni_isim);
 
         $user_id = $_SESSION['user_id'];
         mysqli_query($conn, "INSERT INTO datasets (user_id, cat_id, title, description, filename, filesize) VALUES ('$user_id', '$cat_id', '$title', '$description', '$yeni_isim', '$dosya_boyut')");
         $dataset_id = mysqli_insert_id($conn);
 
-        // Tagleri ekle
         if($tags != ""){
-            $tag_listesi = explode(",", $tags);
-            foreach($tag_listesi as $tag){
+            foreach(explode(",", $tags) as $tag){
                 $tag = trim($tag);
                 if($tag == "") continue;
-
-                $tag_kontrol = mysqli_query($conn, "SELECT tag_id FROM tags WHERE tag_name = '$tag'");
-                if(mysqli_num_rows($tag_kontrol) > 0){
-                    $tag_id = mysqli_fetch_assoc($tag_kontrol)['tag_id'];
+                $tc = mysqli_query($conn, "SELECT tag_id FROM tags WHERE tag_name = '$tag'");
+                if(mysqli_num_rows($tc) > 0){
+                    $tag_id = mysqli_fetch_assoc($tc)['tag_id'];
                 } else {
                     mysqli_query($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')");
                     $tag_id = mysqli_insert_id($conn);
@@ -69,16 +63,16 @@ if(isset($_POST['yukle'])){
 <head>
     <meta charset="UTF-8">
     <title>Dataset Yukle</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <script src="../js/validation.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
 </head>
 <body>
 
 <div class="navbar">
-    <a href="../index.php">Ana Sayfa</a>
+    <a href="index.php">Ana Sayfa</a>
     <a href="upload.php">Yukle</a>
     <a href="profile.php">Profilim</a>
-    <a href="../logout.php">Cikis Yap</a>
+    <a href="logout.php">Cikis Yap</a>
 </div>
 
 <div class="container">

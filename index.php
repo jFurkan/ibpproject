@@ -21,8 +21,8 @@ $kategoriler = mysqli_query($conn, "SELECT * FROM categories");
 <head>
     <meta charset="UTF-8">
     <title>Dataset Paylasim Sitesi</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/ajax.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
 </head>
 <body>
 
@@ -30,9 +30,9 @@ $kategoriler = mysqli_query($conn, "SELECT * FROM categories");
     <a href="index.php">Ana Sayfa</a>
     <a href="datasets.php">Datasetler</a>
     <?php if(isset($_SESSION['user_id'])): ?>
-        <a href="pages/upload.php">Yukle</a>
-        <a href="pages/dashboard.php">Dashboard</a>
-        <a href="pages/profile.php">Profilim</a>
+        <a href="upload.php">Yukle</a>
+        <a href="dashboard.php">Dashboard</a>
+        <a href="profile.php">Profilim</a>
         <a href="logout.php">Cikis (<?php echo $_SESSION['username']; ?>)</a>
     <?php else: ?>
         <a href="login.php">Giris Yap</a>
@@ -81,7 +81,7 @@ $kategoriler = mysqli_query($conn, "SELECT * FROM categories");
             $d = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = {$row['dataset_id']}"));
             ?>
             <div class="dataset-kart">
-                <h3><a href="pages/dataset.php?id=<?php echo $row['dataset_id']; ?>"><?php echo $row['title']; ?></a></h3>
+                <h3><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>"><?php echo $row['title']; ?></a></h3>
                 <p>Kategori: <?php echo $k['cat_name']; ?> | Yukleyen: <?php echo $u['username']; ?></p>
                 <p>Puan: <?php echo $puan; ?> | Indirme: <?php echo $d['sayi']; ?></p>
                 <p><?php echo $row['description']; ?></p>

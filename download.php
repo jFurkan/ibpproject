@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "includes/db.php";
+include "db.php";
 
 if(!isset($_SESSION['user_id'])){
     header("Location: login.php");
@@ -29,6 +29,7 @@ mysqli_query($conn, "INSERT INTO downloads (dataset_id, user_id) VALUES ($id, $u
 
 // Dosyayi indir
 $dosya = "uploads/" . $dataset['filename'];
+
 
 if(file_exists($dosya)){
     header("Content-Disposition: attachment; filename=" . $dataset['filename']);

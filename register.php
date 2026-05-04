@@ -35,8 +35,8 @@ if(isset($_POST['kayit'])){
 <head>
     <meta charset="UTF-8">
     <title>Kayit Ol</title>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/validation.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
 </head>
 <body>
 
