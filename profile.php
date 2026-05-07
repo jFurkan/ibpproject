@@ -22,17 +22,17 @@ $datasetlerim = mysqli_query($conn, "SELECT * FROM datasets WHERE user_id = $use
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="upload.php">Yukle</a>
+    <a href="upload.php">Yükle</a>
     <a href="profile.php">Profilim</a>
-    <a href="logout.php">Cikis Yap</a>
+    <a href="logout.php">Çıkış Yap</a>
 </div>
 
 <div class="container">
     <h2>Profilim</h2>
 
-    <p><strong>Kullanici Adi:</strong> <?php echo $kullanici['username']; ?></p>
+    <p><strong>Kullanıcı Adı:</strong> <?php echo $kullanici['username']; ?></p>
     <p><strong>Email:</strong> <?php echo $kullanici['email']; ?></p>
-    <p><strong>Uyelik Tarihi:</strong> <?php echo $kullanici['created_at']; ?></p>
+    <p><strong>Üyelik Tarihi:</strong> <?php echo $kullanici['created_at']; ?></p>
 
     <hr style="margin:20px 0;">
 
@@ -40,13 +40,13 @@ $datasetlerim = mysqli_query($conn, "SELECT * FROM datasets WHERE user_id = $use
     <br>
 
     <?php if(mysqli_num_rows($datasetlerim) == 0): ?>
-        <p>Henuz dataset yuklediniz. <a href="upload.php">Yukle</a></p>
+        <p>Henüz dataset yüklemediniz. <a href="upload.php">Yükle</a></p>
     <?php else: ?>
         <table>
             <tr>
-                <th>Baslik</th>
+                <th>Başlık</th>
                 <th>Tarih</th>
-                <th>Indirme</th>
+                <th>İndirme</th>
                 <th>Sil</th>
             </tr>
             <?php while($ds = mysqli_fetch_assoc($datasetlerim)): ?>

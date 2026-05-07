@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "includes/db.php";
+include "db.php";
 
 $hata = "";
 
@@ -10,7 +10,7 @@ if(isset($_POST['giris'])){
     $password = $_POST['password'];
 
     if($email == "" || $password == ""){
-        $hata = "Tum alanlari doldurun!";
+        $hata = "Tüm alanları doldurun!";
     } else {
         $sifre = sha1($password);
         $sorgu = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email' AND password = '$sifre'");
@@ -22,7 +22,7 @@ if(isset($_POST['giris'])){
             header("Location: index.php");
             exit();
         } else {
-            $hata = "Email veya sifre yanlis!";
+            $hata = "Email veya şifre yanlış!";
         }
     }
 }
@@ -31,7 +31,7 @@ if(isset($_POST['giris'])){
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Giris Yap</title>
+    <title>Giriş Yap</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
 </head>
@@ -39,12 +39,12 @@ if(isset($_POST['giris'])){
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="login.php">Giris Yap</a>
-    <a href="register.php">Kayit Ol</a>
+    <a href="login.php">Giriş Yap</a>
+    <a href="register.php">Kayıt Ol</a>
 </div>
 
 <div class="container">
-    <h2>Giris Yap</h2>
+    <h2>Giriş Yap</h2>
 
     <?php if($hata != "") echo "<p class='hata'>$hata</p>"; ?>
 
@@ -52,14 +52,14 @@ if(isset($_POST['giris'])){
         <label>Email:</label>
         <input type="email" id="email" name="email">
 
-        <label>Sifre:</label>
+        <label>Şifre:</label>
         <input type="password" id="password" name="password">
 
-        <input type="submit" name="giris" value="Giris Yap">
+        <input type="submit" name="giris" value="Giriş Yap">
     </form>
 
     <br>
-    <a href="register.php">Hesabin yok mu? Kayit ol</a>
+    <a href="register.php">Hesabın yok mu? Kayıt ol</a>
 </div>
 
 </body>

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(\\(New-Object System.Net.Sockets.TcpClient\\).Connect\\('127.0.0.1', 3307\\); Write-Output \"3307 acik\")",
+      "PowerShell(\\(Invoke-WebRequest -Uri \"http://localhost/ibpproject/index.php\" -UseBasicParsing -TimeoutSec 5\\).StatusCode)",
+      "PowerShell(\\(New-Object System.Net.Sockets.TcpClient\\).Connect\\('127.0.0.1', 80\\); Write-Output \"Apache acik\")",
+      "PowerShell(\\(New-Object System.Net.Sockets.TcpClient\\).Connect\\('127.0.0.1', 3307\\); Write-Output \"MySQL acik\")"
+    ],
+    "additionalDirectories": [
+      "C:\\xampp\\htdocs\\ibpproject"
+    ]
+  }
+}

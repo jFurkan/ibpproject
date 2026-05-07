@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp \"c:/Users/Furkan/Desktop/Codes/ibpproject/index.php\" \"C:/xampp/htdocs/ibpproject/index.php\")",
+      "Bash(cp \"c:/Users/Furkan/Desktop/Codes/ibpproject/upload.php\" \"C:/xampp/htdocs/ibpproject/upload.php\")",
+      "Bash(cp \"c:/Users/Furkan/Desktop/Codes/ibpproject/dataset.php\" \"C:/xampp/htdocs/ibpproject/dataset.php\")",
+      "Bash(git commit *)",
+      "PowerShell(Start-Process \"http://localhost/ibpproject/index.php\")",
+      "PowerShell(Start-Process \"C:\\\\xampp\\\\mysql_start.bat\" -WindowStyle Hidden)",
+      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 3307)"
+    ]
+  }
+}

@@ -31,26 +31,26 @@ $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="upload.php">Yukle</a>
+    <a href="upload.php">Yükle</a>
     <a href="profile.php">Profilim</a>
     <a href="dashboard.php">Dashboard</a>
-    <a href="logout.php">Cikis Yap</a>
+    <a href="logout.php">Çıkış Yap</a>
 </div>
 
 <div class="container">
     <h2>Dashboard</h2>
     <br>
 
-    <p>Toplam Kullanici: <strong><?php echo $toplam_user; ?></strong></p>
+    <p>Toplam Kullanıcı: <strong><?php echo $toplam_user; ?></strong></p>
     <p>Toplam Dataset: <strong><?php echo $toplam_dataset; ?></strong></p>
-    <p>Toplam Indirme: <strong><?php echo $toplam_indirme; ?></strong></p>
+    <p>Toplam İndirme: <strong><?php echo $toplam_indirme; ?></strong></p>
 
     <hr style="margin:20px 0;">
 
-    <h3>En Cok Indirilen Datasetler</h3>
+    <h3>En Çok İndirilen Datasetler</h3>
     <br>
     <table>
-        <tr><th>Baslik</th><th>Indirme</th></tr>
+        <tr><th>Başlık</th><th>İndirme</th></tr>
         <?php while($row = mysqli_fetch_assoc($en_cok)): ?>
         <tr>
             <td><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>" class="duz-link"><?php echo $row['title']; ?></a></td>
@@ -61,10 +61,10 @@ $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date
 
     <hr style="margin:20px 0;">
 
-    <h3>Son Yuklenen Datasetler</h3>
+    <h3>Son Yüklenen Datasetler</h3>
     <br>
     <table>
-        <tr><th>Baslik</th><th>Tarih</th></tr>
+        <tr><th>Başlık</th><th>Tarih</th></tr>
         <?php while($row = mysqli_fetch_assoc($son_yuklenen)): ?>
         <tr>
             <td><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>" class="duz-link"><?php echo $row['title']; ?></a></td>

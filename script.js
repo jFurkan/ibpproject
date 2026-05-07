@@ -5,25 +5,25 @@ function kayitDogrula() {
     var sifre = document.getElementById("password").value;
     var sifre2 = document.getElementById("password2").value;
 
-    if (kullanici == "") { alert("Kullanici adi bos olamaz!"); return false; }
+    if (kullanici == "") { alert("Kullanıcı adı boş olamaz!"); return false; }
     if (kullanici.length < 3) { alert("En az 3 karakter!"); return false; }
-    if (email.indexOf("@") == -1) { alert("Gecerli email girin!"); return false; }
-    if (sifre.length < 6) { alert("Sifre en az 6 karakter!"); return false; }
-    if (sifre != sifre2) { alert("Sifreler eslesmedi!"); return false; }
+    if (email.indexOf("@") == -1) { alert("Geçerli email girin!"); return false; }
+    if (sifre.length < 6) { alert("Şifre en az 6 karakter!"); return false; }
+    if (sifre != sifre2) { alert("Şifreler eşleşmedi!"); return false; }
     return true;
 }
 
 // Giris formu
 function girisDogrula() {
-    if (document.getElementById("email").value == "") { alert("Email bos!"); return false; }
-    if (document.getElementById("password").value == "") { alert("Sifre bos!"); return false; }
+    if (document.getElementById("email").value == "") { alert("Email boş!"); return false; }
+    if (document.getElementById("password").value == "") { alert("Şifre boş!"); return false; }
     return true;
 }
 
 // Upload formu
 function uploadDogrula() {
-    if (document.getElementById("title").value == "") { alert("Baslik bos olamaz!"); return false; }
-    if (document.getElementById("file").value == "") { alert("Dosya secin!"); return false; }
+    if (document.getElementById("title").value == "") { alert("Başlık boş olamaz!"); return false; }
+    if (document.getElementById("file").value == "") { alert("Dosya seçin!"); return false; }
     return true;
 }
 
@@ -48,7 +48,7 @@ function canliArama() {
 // AJAX yorum gonderme
 function yorumGonder(dataset_id) {
     var yorum = document.getElementById("comment_text").value;
-    if (yorum == "") { alert("Yorum bos olamaz!"); return; }
+    if (yorum == "") { alert("Yorum boş olamaz!"); return; }
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "ajax_yorum.php", true);
