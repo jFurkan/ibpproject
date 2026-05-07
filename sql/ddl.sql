@@ -1,71 +1,68 @@
--- Dataset Paylasim Sitesi - DDL
-
-CREATE DATABASE IF NOT EXISTS dataset_site;
-USE dataset_site;
+-- Dataset Paylasim Sitesi - DDL (Oracle)
 
 CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    password VARCHAR(64) NOT NULL,
-    created_at DATETIME DEFAULT NOW()
+    user_id    NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username   VARCHAR2(50)  NOT NULL,
+    email      VARCHAR2(100) NOT NULL,
+    password   VARCHAR2(64)  NOT NULL,
+    created_at DATE DEFAULT SYSDATE
 );
 
 CREATE TABLE categories (
-    cat_id INT AUTO_INCREMENT PRIMARY KEY,
-    cat_name VARCHAR(100) NOT NULL
+    cat_id   NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cat_name VARCHAR2(100) NOT NULL
 );
 
 CREATE TABLE datasets (
-    dataset_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    cat_id INT,
-    title VARCHAR(200) NOT NULL,
-    description TEXT,
-    filename VARCHAR(255),
-    filesize INT,
-    upload_date DATETIME DEFAULT NOW(),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (cat_id) REFERENCES categories(cat_id)
+    dataset_id  NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id     NUMBER,
+    cat_id      NUMBER,
+    title       VARCHAR2(200) NOT NULL,
+    description VARCHAR2(4000),
+    filename    VARCHAR2(255),
+    filesize    NUMBER,
+    upload_date DATE DEFAULT SYSDATE,
+    CONSTRAINT fk_ds_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+    CONSTRAINT fk_ds_cat  FOREIGN KEY (cat_id)  REFERENCES categories(cat_id)
 );
 
 CREATE TABLE tags (
-    tag_id INT AUTO_INCREMENT PRIMARY KEY,
-    tag_name VARCHAR(50) NOT NULL
+    tag_id   NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    tag_name VARCHAR2(50) NOT NULL
 );
 
 CREATE TABLE dataset_tags (
-    dataset_id INT,
-    tag_id INT,
+    dataset_id NUMBER,
+    tag_id     NUMBER,
     PRIMARY KEY (dataset_id, tag_id),
-    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
-    FOREIGN KEY (tag_id) REFERENCES tags(tag_id)
+    CONSTRAINT fk_dt_dataset FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
+    CONSTRAINT fk_dt_tag     FOREIGN KEY (tag_id)     REFERENCES tags(tag_id)
 );
 
 CREATE TABLE comments (
-    comment_id INT AUTO_INCREMENT PRIMARY KEY,
-    dataset_id INT,
-    user_id INT,
-    comment_text TEXT NOT NULL,
-    comment_date DATETIME DEFAULT NOW(),
-    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    comment_id   NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dataset_id   NUMBER,
+    user_id      NUMBER,
+    comment_text VARCHAR2(4000) NOT NULL,
+    comment_date DATE DEFAULT SYSDATE,
+    CONSTRAINT fk_cm_dataset FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
+    CONSTRAINT fk_cm_user    FOREIGN KEY (user_id)    REFERENCES users(user_id)
 );
 
 CREATE TABLE ratings (
-    rating_id INT AUTO_INCREMENT PRIMARY KEY,
-    dataset_id INT,
-    user_id INT,
-    rating INT CHECK (rating BETWEEN 1 AND 5),
-    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    rating_id  NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dataset_id NUMBER,
+    user_id    NUMBER,
+    rating     NUMBER CHECK (rating BETWEEN 1 AND 5),
+    CONSTRAINT fk_rt_dataset FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
+    CONSTRAINT fk_rt_user    FOREIGN KEY (user_id)    REFERENCES users(user_id)
 );
 
 CREATE TABLE downloads (
-    download_id INT AUTO_INCREMENT PRIMARY KEY,
-    dataset_id INT,
-    user_id INT,
-    download_date DATETIME DEFAULT NOW(),
-    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    download_id   NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dataset_id    NUMBER,
+    user_id       NUMBER,
+    download_date DATE DEFAULT SYSDATE,
+    CONSTRAINT fk_dl_dataset FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id),
+    CONSTRAINT fk_dl_user    FOREIGN KEY (user_id)    REFERENCES users(user_id)
 );

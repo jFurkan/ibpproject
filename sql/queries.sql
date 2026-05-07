@@ -1,12 +1,13 @@
--- DML Sorgu Ornekleri
+-- DML Sorgu Ornekleri (Oracle)
 
 -- 1) SUBQUERY: En cok indirilen dataseti bul
 SELECT title, filename FROM datasets
 WHERE dataset_id = (
-    SELECT dataset_id FROM downloads
-    GROUP BY dataset_id
-    ORDER BY COUNT(*) DESC
-    LIMIT 1
+    SELECT dataset_id FROM (
+        SELECT dataset_id FROM downloads
+        GROUP BY dataset_id
+        ORDER BY COUNT(*) DESC
+    ) WHERE ROWNUM = 1
 );
 
 -- 2) JOIN: Dataset baslikini, yukleyen kullanicinin adini ve kategori adini goster
@@ -22,10 +23,10 @@ LEFT JOIN datasets d ON c.cat_id = d.cat_id
 GROUP BY c.cat_id, c.cat_name;
 
 -- 4) DATE FUNCTION: Son 30 gun icinde yuklenen datasetler
-SELECT title, upload_date, DATE_FORMAT(upload_date, '%d/%m/%Y') AS tarih
+SELECT title, upload_date, TO_CHAR(upload_date, 'DD/MM/YYYY') AS tarih
 FROM datasets
-WHERE upload_date >= DATE_SUB(NOW(), INTERVAL 30 DAY);
+WHERE upload_date >= SYSDATE - 30;
 
 -- 5) CHARACTER FUNCTION: Kullanici adlarini buyuk harfe cevir ve email domainini goster
-SELECT UPPER(username) AS buyuk_ad, SUBSTRING(email, INSTR(email,'@')+1) AS domain
+SELECT UPPER(username) AS buyuk_ad, SUBSTR(email, INSTR(email, '@') + 1) AS domain
 FROM users;
