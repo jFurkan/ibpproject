@@ -20,7 +20,11 @@ $u = mysqli_fetch_assoc(mysqli_query($conn, "SELECT username FROM users WHERE us
 $k = mysqli_fetch_assoc(mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = {$dataset['cat_id']}"));
 
 $p = mysqli_fetch_assoc(mysqli_query($conn, "SELECT AVG(rating) as ort FROM ratings WHERE dataset_id = $id"));
-$puan = $p['ort'] ? round($p['ort'], 1) . "/5" : "Henuz puanlanmadi";
+if($p['ort']){
+    $puan = round($p['ort'], 1) . "/5";
+} else {
+    $puan = "Henuz puanlanmadi";
+}
 
 $d = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = $id"));
 

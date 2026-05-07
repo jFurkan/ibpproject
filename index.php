@@ -1,8 +1,7 @@
 <?php
 session_start();
-include "includes/db.php";
+include "db.php";
 
-// Arama varsa filtrele, yoksa hepsini getir
 $arama = "";
 if(isset($_GET['ara'])){
     $arama = trim($_GET['ara']);
@@ -75,7 +74,11 @@ $kategoriler = mysqli_query($conn, "SELECT * FROM categories");
 
             // Ortalama puan
             $p = mysqli_fetch_assoc(mysqli_query($conn, "SELECT AVG(rating) as ort FROM ratings WHERE dataset_id = {$row['dataset_id']}"));
-            $puan = $p['ort'] ? round($p['ort'], 1) . "/5" : "Yok";
+            if($p['ort']){
+                $puan = round($p['ort'], 1) . "/5";
+            } else {
+                $puan = "Yok";
+            }
 
             // Indirme sayisi
             $d = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = {$row['dataset_id']}"));

@@ -43,13 +43,8 @@ if(isset($_POST['yukle'])){
             foreach(explode(",", $tags) as $tag){
                 $tag = trim($tag);
                 if($tag == "") continue;
-                $tc = mysqli_query($conn, "SELECT tag_id FROM tags WHERE tag_name = '$tag'");
-                if(mysqli_num_rows($tc) > 0){
-                    $tag_id = mysqli_fetch_assoc($tc)['tag_id'];
-                } else {
-                    mysqli_query($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')");
-                    $tag_id = mysqli_insert_id($conn);
-                }
+                mysqli_query($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')");
+                $tag_id = mysqli_insert_id($conn);
                 mysqli_query($conn, "INSERT INTO dataset_tags (dataset_id, tag_id) VALUES ('$dataset_id', '$tag_id')");
             }
         }
