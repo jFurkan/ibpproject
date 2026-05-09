@@ -7,8 +7,9 @@ if(!isset($_SESSION['user_id'])){
     exit();
 }
 
-$user_id  = $_SESSION['user_id'];
-$kullanici = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM users WHERE user_id = $user_id"));
+$user_id      = $_SESSION['user_id'];
+$k_sonuc      = mysqli_query($conn, "SELECT * FROM users WHERE user_id = $user_id");
+$kullanici    = mysqli_fetch_assoc($k_sonuc);
 $datasetlerim = mysqli_query($conn, "SELECT * FROM datasets WHERE user_id = $user_id ORDER BY upload_date DESC");
 ?>
 <!DOCTYPE html>
@@ -51,12 +52,13 @@ $datasetlerim = mysqli_query($conn, "SELECT * FROM datasets WHERE user_id = $use
             </tr>
             <?php while($ds = mysqli_fetch_assoc($datasetlerim)): ?>
                 <?php
-                $ind = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = {$ds['dataset_id']}"));
+                $ind_sonuc = mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = " . $ds['dataset_id']);
+                $indirme   = mysqli_fetch_assoc($ind_sonuc);
                 ?>
                 <tr>
                     <td><a href="dataset.php?id=<?php echo $ds['dataset_id']; ?>" class="duz-link"><?php echo $ds['title']; ?></a></td>
                     <td><?php echo $ds['upload_date']; ?></td>
-                    <td><?php echo $ind['sayi']; ?></td>
+                    <td><?php echo $indirme['sayi']; ?></td>
                     <td><a href="delete.php?id=<?php echo $ds['dataset_id']; ?>" class="silme-btn" onclick="return confirm('Emin misiniz?')">Sil</a></td>
                 </tr>
             <?php endwhile; ?>

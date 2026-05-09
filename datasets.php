@@ -1,8 +1,8 @@
 <?php
 session_start();
-include "includes/db.php";
+include "db.php";
 
-$result = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
+$sonuc = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
 ?>
 <!DOCTYPE html>
 <html>
@@ -30,15 +30,18 @@ $result = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC"
     <h2>Tum Datasetler</h2>
     <br>
 
-    <?php while($row = mysqli_fetch_assoc($result)): ?>
+    <?php while($satir = mysqli_fetch_assoc($sonuc)): ?>
         <?php
-        $u = mysqli_fetch_assoc(mysqli_query($conn, "SELECT username FROM users WHERE user_id = {$row['user_id']}"));
-        $k = mysqli_fetch_assoc(mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = {$row['cat_id']}"));
+        $u_sonuc  = mysqli_query($conn, "SELECT username FROM users WHERE user_id = " . $satir['user_id']);
+        $yukleyen = mysqli_fetch_assoc($u_sonuc);
+
+        $k_sonuc  = mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = " . $satir['cat_id']);
+        $kategori = mysqli_fetch_assoc($k_sonuc);
         ?>
         <div class="dataset-kart">
-            <h3><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>"><?php echo $row['title']; ?></a></h3>
-            <p>Kategori: <?php echo $k['cat_name']; ?> | Yukleyen: <?php echo $u['username']; ?></p>
-            <p><?php echo $row['description']; ?></p>
+            <h3><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>"><?php echo $satir['title']; ?></a></h3>
+            <p>Kategori: <?php echo $kategori['cat_name']; ?> | Yukleyen: <?php echo $yukleyen['username']; ?></p>
+            <p><?php echo $satir['description']; ?></p>
         </div>
     <?php endwhile; ?>
 </div>

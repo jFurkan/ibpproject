@@ -8,12 +8,11 @@ if(isset($_GET['ara'])){
 }
 
 if($arama == ""){
-    $result = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
+    $sonuc = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
 } else {
-    $result = mysqli_query($conn, "SELECT * FROM datasets WHERE title LIKE '%$arama%' ORDER BY upload_date DESC");
+    $sonuc = mysqli_query($conn, "SELECT * FROM datasets WHERE title LIKE '%$arama%' ORDER BY upload_date DESC");
 }
 
-$kategoriler = mysqli_query($conn, "SELECT * FROM categories");
 ?>
 <!DOCTYPE html>
 <html>
@@ -59,26 +58,29 @@ $kategoriler = mysqli_query($conn, "SELECT * FROM categories");
     <h3>Datasetler</h3>
     <br>
 
-    <?php if(mysqli_num_rows($result) == 0): ?>
+    <?php if(mysqli_num_rows($sonuc) == 0): ?>
         <p>Hiç dataset bulunamadı.</p>
     <?php else: ?>
-        <?php while($row = mysqli_fetch_assoc($result)): ?>
+        <?php while($satir = mysqli_fetch_assoc($sonuc)): ?>
             <?php
-            $u = mysqli_fetch_assoc(mysqli_query($conn, "SELECT username FROM users WHERE user_id = {$row['user_id']}"));
-            $k = mysqli_fetch_assoc(mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = {$row['cat_id']}"));
-            $p = mysqli_fetch_assoc(mysqli_query($conn, "SELECT AVG(rating) as ort FROM ratings WHERE dataset_id = {$row['dataset_id']}"));
-            if($p['ort']){
-                $puan = round($p['ort'], 1) . "/5";
-            } else {
-                $puan = "Yok";
-            }
-            $d = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = {$row['dataset_id']}"));
+            $u_sonuc  = mysqli_query($conn, "SELECT username FROM users WHERE user_id = " . $satir['user_id']);
+            $yukleyen = mysqli_fetch_assoc($u_sonuc);
+
+            $k_sonuc  = mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = " . $satir['cat_id']);
+            $kategori = mysqli_fetch_assoc($k_sonuc);
+
+            $p_sonuc     = mysqli_query($conn, "SELECT AVG(rating) as ort FROM ratings WHERE dataset_id = " . $satir['dataset_id']);
+            $puan_sonuc  = mysqli_fetch_assoc($p_sonuc);
+            $puan        = $puan_sonuc['ort'] ? round($puan_sonuc['ort'], 1) . "/5" : "Yok";
+
+            $d_sonuc  = mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = " . $satir['dataset_id']);
+            $indirme  = mysqli_fetch_assoc($d_sonuc);
             ?>
             <div class="dataset-kart">
-                <h3><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>"><?php echo $row['title']; ?></a></h3>
-                <p>Kategori: <?php echo $k['cat_name']; ?> | Yükleyen: <?php echo $u['username']; ?></p>
-                <p>Puan: <?php echo $puan; ?> | İndirme: <?php echo $d['sayi']; ?></p>
-                <p><?php echo $row['description']; ?></p>
+                <h3><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>"><?php echo $satir['title']; ?></a></h3>
+                <p>Kategori: <?php echo $kategori['cat_name']; ?> | Yükleyen: <?php echo $yukleyen['username']; ?></p>
+                <p>Puan: <?php echo $puan; ?> | İndirme: <?php echo $indirme['sayi']; ?></p>
+                <p><?php echo $satir['description']; ?></p>
             </div>
         <?php endwhile; ?>
     <?php endif; ?>

@@ -7,9 +7,17 @@ if(!isset($_SESSION['user_id'])){
     exit();
 }
 
-$toplam_user    = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM users"))['sayi'];
-$toplam_dataset = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM datasets"))['sayi'];
-$toplam_indirme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads"))['sayi'];
+$sonuc1      = mysqli_query($conn, "SELECT COUNT(*) as sayi FROM users");
+$satir1      = mysqli_fetch_assoc($sonuc1);
+$toplam_user = $satir1['sayi'];
+
+$sonuc2         = mysqli_query($conn, "SELECT COUNT(*) as sayi FROM datasets");
+$satir2         = mysqli_fetch_assoc($sonuc2);
+$toplam_dataset = $satir2['sayi'];
+
+$sonuc3         = mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads");
+$satir3         = mysqli_fetch_assoc($sonuc3);
+$toplam_indirme = $satir3['sayi'];
 
 $en_cok = mysqli_query($conn, "SELECT d.dataset_id, d.title, COUNT(dl.download_id) as toplam
     FROM datasets d
@@ -51,10 +59,10 @@ $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date
     <br>
     <table>
         <tr><th>Başlık</th><th>İndirme</th></tr>
-        <?php while($row = mysqli_fetch_assoc($en_cok)): ?>
+        <?php while($satir = mysqli_fetch_assoc($en_cok)): ?>
         <tr>
-            <td><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>" class="duz-link"><?php echo $row['title']; ?></a></td>
-            <td><?php echo $row['toplam']; ?></td>
+            <td><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>" class="duz-link"><?php echo $satir['title']; ?></a></td>
+            <td><?php echo $satir['toplam']; ?></td>
         </tr>
         <?php endwhile; ?>
     </table>
@@ -65,10 +73,10 @@ $son_yuklenen = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date
     <br>
     <table>
         <tr><th>Başlık</th><th>Tarih</th></tr>
-        <?php while($row = mysqli_fetch_assoc($son_yuklenen)): ?>
+        <?php while($satir = mysqli_fetch_assoc($son_yuklenen)): ?>
         <tr>
-            <td><a href="dataset.php?id=<?php echo $row['dataset_id']; ?>" class="duz-link"><?php echo $row['title']; ?></a></td>
-            <td><?php echo $row['upload_date']; ?></td>
+            <td><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>" class="duz-link"><?php echo $satir['title']; ?></a></td>
+            <td><?php echo $satir['upload_date']; ?></td>
         </tr>
         <?php endwhile; ?>
     </table>

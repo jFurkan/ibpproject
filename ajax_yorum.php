@@ -18,13 +18,16 @@ if($yorum == ""){
 
 mysqli_query($conn, "INSERT INTO comments (dataset_id, user_id, comment_text) VALUES ($dataset_id, $user_id, '$yorum')");
 
-// Guncel yorumlari don
-$result = mysqli_query($conn, "SELECT c.comment_text, c.comment_date, u.username FROM comments c JOIN users u ON c.user_id = u.user_id WHERE c.dataset_id = $dataset_id ORDER BY c.comment_date DESC");
+$sonuc = mysqli_query($conn, "SELECT comment_text, comment_date, user_id FROM comments WHERE dataset_id = $dataset_id ORDER BY comment_date DESC");
 
-while($row = mysqli_fetch_assoc($result)){
+while($satir = mysqli_fetch_assoc($sonuc)){
+    $uid = $satir['user_id'];
+    $ksonuc = mysqli_query($conn, "SELECT username FROM users WHERE user_id = $uid");
+    $kullanici = mysqli_fetch_assoc($ksonuc);
+
     echo "<div class='yorum-kutu'>";
-    echo "<strong>{$row['username']}</strong> - {$row['comment_date']}";
-    echo "<p>{$row['comment_text']}</p>";
+    echo "<strong>" . $kullanici['username'] . "</strong> - " . $satir['comment_date'];
+    echo "<p>" . $satir['comment_text'] . "</p>";
     echo "</div>";
 }
 ?>

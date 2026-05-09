@@ -9,34 +9,39 @@ if(!isset($_GET['id'])){
 
 $id = (int)$_GET['id'];
 
-$result = mysqli_query($conn, "SELECT * FROM datasets WHERE dataset_id = $id");
-if(mysqli_num_rows($result) == 0){
+$ds_sonuc = mysqli_query($conn, "SELECT * FROM datasets WHERE dataset_id = $id");
+if(mysqli_num_rows($ds_sonuc) == 0){
     echo "Dataset bulunamadı!";
     exit();
 }
-$dataset = mysqli_fetch_assoc($result);
+$dataset = mysqli_fetch_assoc($ds_sonuc);
 
-$u = mysqli_fetch_assoc(mysqli_query($conn, "SELECT username FROM users WHERE user_id = {$dataset['user_id']}"));
-$k = mysqli_fetch_assoc(mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = {$dataset['cat_id']}"));
+$u_sonuc  = mysqli_query($conn, "SELECT username FROM users WHERE user_id = " . $dataset['user_id']);
+$yukleyen = mysqli_fetch_assoc($u_sonuc);
 
-$p = mysqli_fetch_assoc(mysqli_query($conn, "SELECT AVG(rating) as ort FROM ratings WHERE dataset_id = $id"));
-if($p['ort']){
-    $puan = round($p['ort'], 1) . "/5";
+$k_sonuc  = mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = " . $dataset['cat_id']);
+$kategori = mysqli_fetch_assoc($k_sonuc);
+
+$p_sonuc    = mysqli_query($conn, "SELECT AVG(rating) as ort FROM ratings WHERE dataset_id = $id");
+$puan_sonuc = mysqli_fetch_assoc($p_sonuc);
+if($puan_sonuc['ort']){
+    $puan = round($puan_sonuc['ort'], 1) . "/5";
 } else {
     $puan = "Henüz puanlanmadı";
 }
 
-$d = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = $id"));
+$d_sonuc = mysqli_query($conn, "SELECT COUNT(*) as sayi FROM downloads WHERE dataset_id = $id");
+$indirme = mysqli_fetch_assoc($d_sonuc);
 
-$tagler  = mysqli_query($conn, "SELECT t.tag_name FROM tags t JOIN dataset_tags dt ON t.tag_id = dt.tag_id WHERE dt.dataset_id = $id");
+$tagler   = mysqli_query($conn, "SELECT t.tag_name FROM tags t JOIN dataset_tags dt ON t.tag_id = dt.tag_id WHERE dt.dataset_id = $id");
 $yorumlar = mysqli_query($conn, "SELECT c.comment_text, c.comment_date, u.username FROM comments c JOIN users u ON c.user_id = u.user_id WHERE c.dataset_id = $id ORDER BY c.comment_date DESC");
 
-$hata = "";
+$hata   = "";
 $basari = "";
 
 if(isset($_POST['puan_gonder']) && isset($_SESSION['user_id'])){
     $puan_deger = (int)$_POST['rating'];
-    $user_id = $_SESSION['user_id'];
+    $user_id    = $_SESSION['user_id'];
     mysqli_query($conn, "DELETE FROM ratings WHERE dataset_id = $id AND user_id = $user_id");
     mysqli_query($conn, "INSERT INTO ratings (dataset_id, user_id, rating) VALUES ($id, $user_id, $puan_deger)");
     $basari = "Puanınız kaydedildi!";
@@ -70,11 +75,11 @@ if(isset($_POST['puan_gonder']) && isset($_SESSION['user_id'])){
     <?php if($hata != "") echo "<p class='hata'>$hata</p>"; ?>
     <?php if($basari != "") echo "<p class='basari'>$basari</p>"; ?>
 
-    <p><strong>Kategori:</strong> <?php echo $k['cat_name']; ?></p>
-    <p><strong>Yükleyen:</strong> <?php echo $u['username']; ?></p>
+    <p><strong>Kategori:</strong> <?php echo $kategori['cat_name']; ?></p>
+    <p><strong>Yükleyen:</strong> <?php echo $yukleyen['username']; ?></p>
     <p><strong>Tarih:</strong> <?php echo $dataset['upload_date']; ?></p>
     <p><strong>Puan:</strong> <?php echo $puan; ?></p>
-    <p><strong>İndirme:</strong> <?php echo $d['sayi']; ?></p>
+    <p><strong>İndirme:</strong> <?php echo $indirme['sayi']; ?></p>
     <p><strong>Açıklama:</strong> <?php echo $dataset['description']; ?></p>
 
     <p><strong>Taglar:</strong>
