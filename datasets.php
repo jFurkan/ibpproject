@@ -2,7 +2,7 @@
 session_start();
 include "db.php";
 
-$sonuc = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
+$sonuc = db_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
 ?>
 <!DOCTYPE html>
 <html>
@@ -30,13 +30,13 @@ $sonuc = mysqli_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC")
     <h2>Tum Datasetler</h2>
     <br>
 
-    <?php while($satir = mysqli_fetch_assoc($sonuc)): ?>
+    <?php while($satir = db_fetch($sonuc)): ?>
         <?php
-        $u_sonuc  = mysqli_query($conn, "SELECT username FROM users WHERE user_id = " . $satir['user_id']);
-        $yukleyen = mysqli_fetch_assoc($u_sonuc);
+        $u_sonuc  = db_query($conn, "SELECT username FROM users WHERE user_id = " . $satir['user_id']);
+        $yukleyen = db_fetch($u_sonuc);
 
-        $k_sonuc  = mysqli_query($conn, "SELECT cat_name FROM categories WHERE cat_id = " . $satir['cat_id']);
-        $kategori = mysqli_fetch_assoc($k_sonuc);
+        $k_sonuc  = db_query($conn, "SELECT cat_name FROM categories WHERE cat_id = " . $satir['cat_id']);
+        $kategori = db_fetch($k_sonuc);
         ?>
         <div class="dataset-kart">
             <h3><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>"><?php echo $satir['title']; ?></a></h3>

@@ -16,14 +16,14 @@ if($yorum == ""){
     exit();
 }
 
-mysqli_query($conn, "INSERT INTO comments (dataset_id, user_id, comment_text) VALUES ($dataset_id, $user_id, '$yorum')");
+db_query($conn, "INSERT INTO comments (dataset_id, user_id, comment_text) VALUES ($dataset_id, $user_id, '$yorum')");
 
-$sonuc = mysqli_query($conn, "SELECT comment_text, comment_date, user_id FROM comments WHERE dataset_id = $dataset_id ORDER BY comment_date DESC");
+$sonuc = db_query($conn, "SELECT comment_text, comment_date, user_id FROM comments WHERE dataset_id = $dataset_id ORDER BY comment_date DESC");
 
-while($satir = mysqli_fetch_assoc($sonuc)){
-    $uid = $satir['user_id'];
-    $ksonuc = mysqli_query($conn, "SELECT username FROM users WHERE user_id = $uid");
-    $kullanici = mysqli_fetch_assoc($ksonuc);
+while($satir = db_fetch($sonuc)){
+    $uid       = $satir['user_id'];
+    $ksonuc    = db_query($conn, "SELECT username FROM users WHERE user_id = $uid");
+    $kullanici = db_fetch($ksonuc);
 
     echo "<div class='yorum-kutu'>";
     echo "<strong>" . $kullanici['username'] . "</strong> - " . $satir['comment_date'];

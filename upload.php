@@ -7,10 +7,12 @@ if(!isset($_SESSION['user_id'])){
     exit();
 }
 
-$hata = "";
+$hata   = "";
 $basari = "";
 
-$kategoriler = mysqli_query($conn, "SELECT * FROM categories");
+$kategoriler = db_query($conn, "SELECT * FROM categories");
+$kat_rows    = [];
+while($k = db_fetch($kategoriler)) $kat_rows[] = $k;
 
 if(isset($_POST['yukle'])){
 
@@ -20,11 +22,11 @@ if(isset($_POST['yukle'])){
     $tags        = trim($_POST['tags']);
 
     if($title == ""){
-        $hata = "Başlık boş olamaz!";
+        $hata = "Baslik bos olamaz!";
     } elseif($cat_id == ""){
-        $hata = "Kategori seçin!";
+        $hata = "Kategori secin!";
     } elseif($_FILES['file']['error'] != 0){
-        $hata = "Dosya seçin!";
+        $hata = "Dosya secin!";
     } else {
 
         $dosya_adi   = $_FILES['file']['name'];
@@ -35,21 +37,22 @@ if(isset($_POST['yukle'])){
 
         move_uploaded_file($_FILES['file']['tmp_name'], "uploads/" . $yeni_isim);
 
-        $user_id = $_SESSION['user_id'];
-        mysqli_query($conn, "INSERT INTO datasets (user_id, cat_id, title, description, filename, filesize) VALUES ('$user_id', '$cat_id', '$title', '$description', '$yeni_isim', '$dosya_boyut')");
-        $dataset_id = mysqli_insert_id($conn);
+        $user_id    = $_SESSION['user_id'];
+        $dataset_id = db_insert_id($conn,
+            "INSERT INTO datasets (user_id, cat_id, title, description, filename, filesize) VALUES ('$user_id', '$cat_id', '$title', '$description', '$yeni_isim', '$dosya_boyut')",
+            "dataset_id"
+        );
 
         if($tags != ""){
             foreach(explode(",", $tags) as $tag){
                 $tag = trim($tag);
                 if($tag == "") continue;
-                mysqli_query($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')");
-                $tag_id = mysqli_insert_id($conn);
-                mysqli_query($conn, "INSERT INTO dataset_tags (dataset_id, tag_id) VALUES ('$dataset_id', '$tag_id')");
+                $tag_id = db_insert_id($conn, "INSERT INTO tags (tag_name) VALUES ('$tag')", "tag_id");
+                db_query($conn, "INSERT INTO dataset_tags (dataset_id, tag_id) VALUES ($dataset_id, $tag_id)");
             }
         }
 
-        $basari = "Dataset yüklendi! <a href='dataset.php?id=$dataset_id'>Görüntüle</a>";
+        $basari = "Dataset yuklendi! <a href='dataset.php?id=$dataset_id'>Goruntule</a>";
     }
 }
 ?>
@@ -57,7 +60,7 @@ if(isset($_POST['yukle'])){
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Dataset Yükle</title>
+    <title>Dataset Yukle</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
 </head>
@@ -65,41 +68,41 @@ if(isset($_POST['yukle'])){
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="upload.php">Yükle</a>
+    <a href="upload.php">Yukle</a>
     <a href="profile.php">Profilim</a>
-    <a href="logout.php">Çıkış Yap</a>
+    <a href="logout.php">Cikis Yap</a>
 </div>
 
 <div class="container">
-    <h2>Dataset Yükle</h2>
+    <h2>Dataset Yukle</h2>
 
     <?php if($hata != "") echo "<p class='hata'>$hata</p>"; ?>
     <?php if($basari != "") echo "<p class='basari'>$basari</p>"; ?>
 
     <form method="POST" enctype="multipart/form-data" onsubmit="return uploadDogrula()">
 
-        <label>Başlık:</label>
+        <label>Baslik:</label>
         <input type="text" id="title" name="title">
 
-        <label>Açıklama:</label>
+        <label>Aciklama:</label>
         <textarea name="description" rows="4"></textarea>
 
         <label>Kategori:</label>
         <select name="cat_id">
-            <option value="">Seçin...</option>
-            <?php while($k = mysqli_fetch_assoc($kategoriler)): ?>
+            <option value="">Secin...</option>
+            <?php foreach($kat_rows as $k): ?>
                 <option value="<?php echo $k['cat_id']; ?>"><?php echo $k['cat_name']; ?></option>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </select>
 
-        <label>Taglar (virgül ile ayırın):</label>
-        <input type="text" name="tags" placeholder="csv, sağlık, makine öğrenmesi">
+        <label>Taglar (virgul ile ayirin):</label>
+        <input type="text" name="tags" placeholder="csv, saglik, makine ogrenimi">
 
         <label>Dosya:</label>
         <input type="file" id="file" name="file">
 
         <br><br>
-        <input type="submit" name="yukle" value="Yükle">
+        <input type="submit" name="yukle" value="Yukle">
     </form>
 </div>
 

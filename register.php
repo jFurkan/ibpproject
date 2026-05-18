@@ -2,30 +2,30 @@
 session_start();
 include "db.php";
 
-$hata = "";
+$hata   = "";
 $basari = "";
 
 if(isset($_POST['kayit'])){
 
-    $username = trim($_POST['username']);
-    $email    = trim($_POST['email']);
-    $password = $_POST['password'];
+    $username  = trim($_POST['username']);
+    $email     = trim($_POST['email']);
+    $password  = $_POST['password'];
     $password2 = $_POST['password2'];
 
     if($username == "" || $email == "" || $password == ""){
-        $hata = "Tüm alanları doldurun!";
+        $hata = "Tum alanlari doldurun!";
     } elseif(strlen($password) < 6){
-        $hata = "Şifre en az 6 karakter olmalı!";
+        $hata = "Sifre en az 6 karakter olmali!";
     } elseif($password != $password2){
-        $hata = "Şifreler eşleşmedi!";
+        $hata = "Sifreler eslesmed!";
     } else {
-        $kontrol = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
-        if(mysqli_num_rows($kontrol) > 0){
-            $hata = "Bu email zaten kayıtlı!";
+        $kontrol = db_query($conn, "SELECT user_id FROM users WHERE email = '$email'");
+        if(db_fetch($kontrol)){
+            $hata = "Bu email zaten kayitli!";
         } else {
             $sifre = sha1($password);
-            mysqli_query($conn, "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$sifre')");
-            $basari = "Kayıt başarılı! <a href='login.php'>Giriş yap</a>";
+            db_query($conn, "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$sifre')");
+            $basari = "Kayit basarili! <a href='login.php'>Giris yap</a>";
         }
     }
 }
@@ -34,7 +34,7 @@ if(isset($_POST['kayit'])){
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Kayıt Ol</title>
+    <title>Kayit Ol</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
 </head>
@@ -42,34 +42,34 @@ if(isset($_POST['kayit'])){
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="login.php">Giriş Yap</a>
-    <a href="register.php">Kayıt Ol</a>
+    <a href="login.php">Giris Yap</a>
+    <a href="register.php">Kayit Ol</a>
 </div>
 
 <div class="container">
-    <h2>Kayıt Ol</h2>
+    <h2>Kayit Ol</h2>
 
     <?php if($hata != "") echo "<p class='hata'>$hata</p>"; ?>
     <?php if($basari != "") echo "<p class='basari'>$basari</p>"; ?>
 
     <form method="POST" onsubmit="return kayitDogrula()">
-        <label>Kullanıcı Adı:</label>
+        <label>Kullanici Adi:</label>
         <input type="text" id="username" name="username">
 
         <label>Email:</label>
         <input type="email" id="email" name="email">
 
-        <label>Şifre:</label>
+        <label>Sifre:</label>
         <input type="password" id="password" name="password">
 
-        <label>Şifre Tekrar:</label>
+        <label>Sifre Tekrar:</label>
         <input type="password" id="password2" name="password2">
 
-        <input type="submit" name="kayit" value="Kayıt Ol">
+        <input type="submit" name="kayit" value="Kayit Ol">
     </form>
 
     <br>
-    <a href="login.php">Zaten hesabın var mı? Giriş yap</a>
+    <a href="login.php">Zaten hesabin var mi? Giris yap</a>
 </div>
 
 </body>
