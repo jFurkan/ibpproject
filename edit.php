@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: text/html; charset=UTF-8');
 include "db.php";
 
 if(!isset($_SESSION['user_id'])){
@@ -18,7 +19,7 @@ $user_id = $_SESSION['user_id'];
 $sonuc   = db_query($conn, "SELECT * FROM datasets WHERE dataset_id = $id AND user_id = $user_id");
 $dataset = db_fetch($sonuc);
 if(!$dataset){
-    echo "Bu islemi yapamazsiniz!";
+    echo "Bu işlemi yapamazsınız!";
     exit();
 }
 
@@ -41,9 +42,9 @@ if(isset($_POST['guncelle'])){
     $tags        = trim($_POST['tags']);
 
     if($title == ""){
-        $hata = "Baslik bos olamaz!";
+        $hata = "Başlık boş olamaz!";
     } elseif($cat_id == 0){
-        $hata = "Kategori secin!";
+        $hata = "Kategori seçin!";
     } else {
 
         db_query($conn, "UPDATE datasets SET title='$title', description='$description', cat_id='$cat_id' WHERE dataset_id=$id AND user_id=$user_id");
@@ -59,7 +60,7 @@ if(isset($_POST['guncelle'])){
             }
         }
 
-        $basari                 = "Dataset guncellendi!";
+        $basari                 = "Dataset güncellendi!";
         $dataset['title']       = $title;
         $dataset['description'] = $description;
         $dataset['cat_id']      = $cat_id;
@@ -71,35 +72,35 @@ if(isset($_POST['guncelle'])){
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Dataset Duzenle</title>
+    <title>Dataset Düzenle</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="upload.php">Yukle</a>
+    <a href="upload.php">Yükle</a>
     <a href="profile.php">Profilim</a>
-    <a href="logout.php">Cikis Yap</a>
+    <a href="logout.php">Çıkış Yap</a>
 </div>
 
 <div class="container">
-    <h2>Dataset Duzenle</h2>
+    <h2>Dataset Düzenle</h2>
 
     <?php if($hata != "") echo "<p class='hata'>$hata</p>"; ?>
     <?php if($basari != "") echo "<p class='basari'>$basari</p>"; ?>
 
     <form method="POST">
 
-        <label>Baslik:</label>
+        <label>Başlık:</label>
         <input type="text" name="title" value="<?php echo $dataset['title']; ?>">
 
-        <label>Aciklama:</label>
+        <label>Açıklama:</label>
         <textarea name="description" rows="4"><?php echo $dataset['description']; ?></textarea>
 
         <label>Kategori:</label>
         <select name="cat_id">
-            <option value="">Secin...</option>
+            <option value="">Seçin...</option>
             <?php foreach($kat_rows as $k): ?>
                 <option value="<?php echo $k['cat_id']; ?>"
                     <?php if($k['cat_id'] == $dataset['cat_id']) echo "selected"; ?>>
@@ -108,13 +109,13 @@ if(isset($_POST['guncelle'])){
             <?php endforeach; ?>
         </select>
 
-        <label>Taglar (virgul ile ayirin):</label>
+        <label>Taglar (virgül ile ayırın):</label>
         <input type="text" name="tags" value="<?php echo implode(", ", $mevcut_taglar); ?>">
 
         <br><br>
-        <input type="submit" name="guncelle" value="Guncelle">
+        <input type="submit" name="guncelle" value="Güncelle">
         &nbsp;
-        <a href="dataset.php?id=<?php echo $id; ?>"><button type="button">Iptal</button></a>
+        <a href="dataset.php?id=<?php echo $id; ?>"><button type="button">İptal</button></a>
 
     </form>
 </div>

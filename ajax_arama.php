@@ -13,7 +13,7 @@ $rows = [];
 while($row = db_fetch($result)) $rows[] = $row;
 
 if(empty($rows)){
-    echo "<p style='color:gray;'>Sonuc bulunamadi.</p>";
+    echo "<p style='color:gray;'>Sonuç bulunamadı.</p>";
 } else {
     echo "<div style='border:1px solid #ccc; padding:10px; background:white;'>";
     foreach($rows as $row){

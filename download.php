@@ -18,7 +18,7 @@ $user_id = $_SESSION['user_id'];
 $sonuc = db_query($conn, "SELECT * FROM datasets WHERE dataset_id = $id");
 $dataset = db_fetch($sonuc);
 if(!$dataset){
-    echo "Dataset bulunamadi!";
+    echo "Dataset bulunamadı!";
     exit();
 }
 
@@ -33,6 +33,6 @@ if(file_exists($dosya)){
     readfile($dosya);
     exit();
 } else {
-    echo "Dosya bulunamadi! <a href='index.php'>Ana sayfaya don</a>";
+    echo "Dosya bulunamadı! <a href='index.php'>Ana sayfaya dön</a>";
 }
 ?>

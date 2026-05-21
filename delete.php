@@ -18,7 +18,7 @@ $user_id = $_SESSION['user_id'];
 $sonuc   = db_query($conn, "SELECT * FROM datasets WHERE dataset_id = $id AND user_id = $user_id");
 $dataset = db_fetch($sonuc);
 if(!$dataset){
-    echo "Bu islemi yapamazsiniz!";
+    echo "Bu işlemi yapamazsınız!";
     exit();
 }
 

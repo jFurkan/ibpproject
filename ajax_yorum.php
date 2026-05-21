@@ -3,7 +3,7 @@ session_start();
 include "db.php";
 
 if(!isset($_SESSION['user_id'])){
-    echo "Giris yapmaniz gerekiyor!";
+    echo "Giriş yapmanız gerekiyor!";
     exit();
 }
 
@@ -12,7 +12,7 @@ $yorum      = trim($_POST['yorum']);
 $user_id    = $_SESSION['user_id'];
 
 if($yorum == ""){
-    echo "Yorum bos olamaz!";
+    echo "Yorum boş olamaz!";
     exit();
 }
 

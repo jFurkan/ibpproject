@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: text/html; charset=UTF-8');
 include "db.php";
 
 $arama = "";
@@ -20,7 +21,7 @@ while($row = db_fetch($sonuc)) $rows[] = $row;
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Dataset Paylasim Sitesi</title>
+    <title>Dataset Paylaşım Sitesi</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
 </head>
@@ -30,19 +31,19 @@ while($row = db_fetch($sonuc)) $rows[] = $row;
     <a href="index.php">Ana Sayfa</a>
     <a href="datasets.php">Datasetler</a>
     <?php if(isset($_SESSION['user_id'])): ?>
-        <a href="upload.php">Yukle</a>
+        <a href="upload.php">Yükle</a>
         <a href="dashboard.php">Dashboard</a>
         <a href="profile.php">Profilim</a>
-        <a href="logout.php">Cikis (<?php echo $_SESSION['username']; ?>)</a>
+        <a href="logout.php">Çıkış (<?php echo $_SESSION['username']; ?>)</a>
     <?php else: ?>
-        <a href="login.php">Giris Yap</a>
-        <a href="register.php">Kayit Ol</a>
+        <a href="login.php">Giriş Yap</a>
+        <a href="register.php">Kayıt Ol</a>
     <?php endif; ?>
 </div>
 
 <div class="container">
-    <h2>Dataset Paylasim Sitesi</h2>
-    <p>Veri setlerini yukle, paylas ve indir!</p>
+    <h2>Dataset Paylaşım Sitesi</h2>
+    <p>Veri setlerini yükle, paylaş ve indir!</p>
     <br>
 
     <input type="text" id="arama" placeholder="Dataset ara..." onkeyup="canliArama()" style="width:60%;">
@@ -61,7 +62,7 @@ while($row = db_fetch($sonuc)) $rows[] = $row;
     <br>
 
     <?php if(empty($rows)): ?>
-        <p>Hic dataset bulunamadi.</p>
+        <p>Hiç dataset bulunamadı.</p>
     <?php else: ?>
         <?php foreach($rows as $satir): ?>
             <?php
@@ -80,8 +81,8 @@ while($row = db_fetch($sonuc)) $rows[] = $row;
             ?>
             <div class="dataset-kart">
                 <h3><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>"><?php echo $satir['title']; ?></a></h3>
-                <p>Kategori: <?php echo $kategori['cat_name']; ?> | Yukleyen: <?php echo $yukleyen['username']; ?></p>
-                <p>Puan: <?php echo $puan; ?> | Indirme: <?php echo $indirme['sayi']; ?></p>
+                <p>Kategori: <?php echo $kategori['cat_name']; ?> | Yükleyen: <?php echo $yukleyen['username']; ?></p>
+                <p>Puan: <?php echo $puan; ?> | İndirme: <?php echo $indirme['sayi']; ?></p>
                 <p><?php echo $satir['description']; ?></p>
             </div>
         <?php endforeach; ?>

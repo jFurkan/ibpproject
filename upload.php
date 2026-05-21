@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: text/html; charset=UTF-8');
 include "db.php";
 
 if(!isset($_SESSION['user_id'])){
@@ -22,11 +23,11 @@ if(isset($_POST['yukle'])){
     $tags        = trim($_POST['tags']);
 
     if($title == ""){
-        $hata = "Baslik bos olamaz!";
+        $hata = "Başlık boş olamaz!";
     } elseif($cat_id == ""){
-        $hata = "Kategori secin!";
+        $hata = "Kategori seçin!";
     } elseif($_FILES['file']['error'] != 0){
-        $hata = "Dosya secin!";
+        $hata = "Dosya seçin!";
     } else {
 
         $dosya_adi   = $_FILES['file']['name'];
@@ -52,7 +53,7 @@ if(isset($_POST['yukle'])){
             }
         }
 
-        $basari = "Dataset yuklendi! <a href='dataset.php?id=$dataset_id'>Goruntule</a>";
+        $basari = "Dataset yüklendi! <a href='dataset.php?id=$dataset_id'>Görüntüle</a>";
     }
 }
 ?>
@@ -60,7 +61,7 @@ if(isset($_POST['yukle'])){
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Dataset Yukle</title>
+    <title>Dataset Yükle</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
 </head>
@@ -68,41 +69,41 @@ if(isset($_POST['yukle'])){
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="upload.php">Yukle</a>
+    <a href="upload.php">Yükle</a>
     <a href="profile.php">Profilim</a>
-    <a href="logout.php">Cikis Yap</a>
+    <a href="logout.php">Çıkış Yap</a>
 </div>
 
 <div class="container">
-    <h2>Dataset Yukle</h2>
+    <h2>Dataset Yükle</h2>
 
     <?php if($hata != "") echo "<p class='hata'>$hata</p>"; ?>
     <?php if($basari != "") echo "<p class='basari'>$basari</p>"; ?>
 
     <form method="POST" enctype="multipart/form-data" onsubmit="return uploadDogrula()">
 
-        <label>Baslik:</label>
+        <label>Başlık:</label>
         <input type="text" id="title" name="title">
 
-        <label>Aciklama:</label>
+        <label>Açıklama:</label>
         <textarea name="description" rows="4"></textarea>
 
         <label>Kategori:</label>
         <select name="cat_id">
-            <option value="">Secin...</option>
+            <option value="">Seçin...</option>
             <?php foreach($kat_rows as $k): ?>
                 <option value="<?php echo $k['cat_id']; ?>"><?php echo $k['cat_name']; ?></option>
             <?php endforeach; ?>
         </select>
 
-        <label>Taglar (virgul ile ayirin):</label>
-        <input type="text" name="tags" placeholder="csv, saglik, makine ogrenimi">
+        <label>Taglar (virgül ile ayırın):</label>
+        <input type="text" name="tags" placeholder="csv, sağlık, makine öğrenimi">
 
         <label>Dosya:</label>
         <input type="file" id="file" name="file">
 
         <br><br>
-        <input type="submit" name="yukle" value="Yukle">
+        <input type="submit" name="yukle" value="Yükle">
     </form>
 </div>
 

@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: text/html; charset=UTF-8');
 include "db.php";
 
 if(!isset($_SESSION['user_id'])){
@@ -41,26 +42,26 @@ while($s = db_fetch($son_yuklenen)) $son_rows[] = $s;
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="upload.php">Yukle</a>
+    <a href="upload.php">Yükle</a>
     <a href="profile.php">Profilim</a>
     <a href="dashboard.php">Dashboard</a>
-    <a href="logout.php">Cikis Yap</a>
+    <a href="logout.php">Çıkış Yap</a>
 </div>
 
 <div class="container">
     <h2>Dashboard</h2>
     <br>
 
-    <p>Toplam Kullanici: <strong><?php echo $toplam_user; ?></strong></p>
+    <p>Toplam Kullanıcı: <strong><?php echo $toplam_user; ?></strong></p>
     <p>Toplam Dataset: <strong><?php echo $toplam_dataset; ?></strong></p>
-    <p>Toplam Indirme: <strong><?php echo $toplam_indirme; ?></strong></p>
+    <p>Toplam İndirme: <strong><?php echo $toplam_indirme; ?></strong></p>
 
     <hr style="margin:20px 0;">
 
-    <h3>En Cok Indirilen Datasetler</h3>
+    <h3>En Çok İndirilen Datasetler</h3>
     <br>
     <table>
-        <tr><th>Baslik</th><th>Indirme</th></tr>
+        <tr><th>Başlık</th><th>İndirme</th></tr>
         <?php while($satir = db_fetch($en_cok)): ?>
         <tr>
             <td><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>" class="duz-link"><?php echo $satir['title']; ?></a></td>
@@ -71,10 +72,10 @@ while($s = db_fetch($son_yuklenen)) $son_rows[] = $s;
 
     <hr style="margin:20px 0;">
 
-    <h3>Son Yuklenen Datasetler</h3>
+    <h3>Son Yüklenen Datasetler</h3>
     <br>
     <table>
-        <tr><th>Baslik</th><th>Tarih</th></tr>
+        <tr><th>Başlık</th><th>Tarih</th></tr>
         <?php foreach($son_rows as $satir): ?>
         <tr>
             <td><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>" class="duz-link"><?php echo $satir['title']; ?></a></td>

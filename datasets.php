@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: text/html; charset=UTF-8');
 include "db.php";
 
 $sonuc = db_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
@@ -8,7 +9,7 @@ $sonuc = db_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Tum Datasetler</title>
+    <title>Tüm Datasetler</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,17 +18,17 @@ $sonuc = db_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
     <a href="index.php">Ana Sayfa</a>
     <a href="datasets.php">Datasetler</a>
     <?php if(isset($_SESSION['user_id'])): ?>
-        <a href="upload.php">Yukle</a>
+        <a href="upload.php">Yükle</a>
         <a href="profile.php">Profilim</a>
-        <a href="logout.php">Cikis Yap</a>
+        <a href="logout.php">Çıkış Yap</a>
     <?php else: ?>
-        <a href="login.php">Giris Yap</a>
-        <a href="register.php">Kayit Ol</a>
+        <a href="login.php">Giriş Yap</a>
+        <a href="register.php">Kayıt Ol</a>
     <?php endif; ?>
 </div>
 
 <div class="container">
-    <h2>Tum Datasetler</h2>
+    <h2>Tüm Datasetler</h2>
     <br>
 
     <?php while($satir = db_fetch($sonuc)): ?>
@@ -40,7 +41,7 @@ $sonuc = db_query($conn, "SELECT * FROM datasets ORDER BY upload_date DESC");
         ?>
         <div class="dataset-kart">
             <h3><a href="dataset.php?id=<?php echo $satir['dataset_id']; ?>"><?php echo $satir['title']; ?></a></h3>
-            <p>Kategori: <?php echo $kategori['cat_name']; ?> | Yukleyen: <?php echo $yukleyen['username']; ?></p>
+            <p>Kategori: <?php echo $kategori['cat_name']; ?> | Yükleyen: <?php echo $yukleyen['username']; ?></p>
             <p><?php echo $satir['description']; ?></p>
         </div>
     <?php endwhile; ?>

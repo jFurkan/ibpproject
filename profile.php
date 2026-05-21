@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: text/html; charset=UTF-8');
 include "db.php";
 
 if(!isset($_SESSION['user_id'])){
@@ -25,17 +26,17 @@ while($ds = db_fetch($datasetlerim)) $ds_rows[] = $ds;
 
 <div class="navbar">
     <a href="index.php">Ana Sayfa</a>
-    <a href="upload.php">Yukle</a>
+    <a href="upload.php">Yükle</a>
     <a href="profile.php">Profilim</a>
-    <a href="logout.php">Cikis Yap</a>
+    <a href="logout.php">Çıkış Yap</a>
 </div>
 
 <div class="container">
     <h2>Profilim</h2>
 
-    <p><strong>Kullanici Adi:</strong> <?php echo $kullanici['username']; ?></p>
+    <p><strong>Kullanıcı Adı:</strong> <?php echo $kullanici['username']; ?></p>
     <p><strong>Email:</strong> <?php echo $kullanici['email']; ?></p>
-    <p><strong>Uyelik Tarihi:</strong> <?php echo $kullanici['created_at']; ?></p>
+    <p><strong>Üyelik Tarihi:</strong> <?php echo $kullanici['created_at']; ?></p>
 
     <hr style="margin:20px 0;">
 
@@ -43,14 +44,14 @@ while($ds = db_fetch($datasetlerim)) $ds_rows[] = $ds;
     <br>
 
     <?php if(empty($ds_rows)): ?>
-        <p>Henuz dataset yuklemediniz. <a href="upload.php">Yukle</a></p>
+        <p>Henüz dataset yüklemediniz. <a href="upload.php">Yükle</a></p>
     <?php else: ?>
         <table>
             <tr>
-                <th>Baslik</th>
+                <th>Başlık</th>
                 <th>Tarih</th>
-                <th>Indirme</th>
-                <th>Duzenle</th>
+                <th>İndirme</th>
+                <th>Düzenle</th>
                 <th>Sil</th>
             </tr>
             <?php foreach($ds_rows as $ds): ?>
@@ -62,7 +63,7 @@ while($ds = db_fetch($datasetlerim)) $ds_rows[] = $ds;
                     <td><a href="dataset.php?id=<?php echo $ds['dataset_id']; ?>" class="duz-link"><?php echo $ds['title']; ?></a></td>
                     <td><?php echo $ds['upload_date']; ?></td>
                     <td><?php echo $indirme['sayi']; ?></td>
-                    <td><a href="edit.php?id=<?php echo $ds['dataset_id']; ?>">Duzenle</a></td>
+                    <td><a href="edit.php?id=<?php echo $ds['dataset_id']; ?>">Düzenle</a></td>
                     <td><a href="delete.php?id=<?php echo $ds['dataset_id']; ?>" class="silme-btn" onclick="return confirm('Emin misiniz?')">Sil</a></td>
                 </tr>
             <?php endforeach; ?>
